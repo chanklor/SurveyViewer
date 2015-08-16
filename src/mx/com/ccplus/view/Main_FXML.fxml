@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.net.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane id="AnchorPane" prefHeight="638.0" prefWidth="1061.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="mx.com.ccplus.view.Main_FXMLController">
+    <stylesheets>
+        <URL value="@main_fxml.css" />
+    </stylesheets>
+   <children>
+      <TableView fx:id="tabla" layoutX="14.0" layoutY="184.0" prefHeight="440.0" prefWidth="1034.0">
+        <columns>
+          <TableColumn fx:id="colPregunta" prefWidth="513.0" text="Pregunta" />
+          <TableColumn prefWidth="256.0" text="Calificaciones">
+               <columns>
+                  <TableColumn fx:id="colUno" prefWidth="50.0" text="1" />
+                  <TableColumn fx:id="colDos" prefWidth="50.0" text="2" />
+                  <TableColumn fx:id="colTres" prefWidth="50.0" text="3" />
+                  <TableColumn fx:id="colCuatro" prefWidth="50.0" text="4" />
+                  <TableColumn fx:id="colCinco" prefWidth="50.0" text="5" />
+               </columns>
+            </TableColumn>
+            <TableColumn prefWidth="286.0" text="Resultados">
+               <columns>
+                  <TableColumn fx:id="colTotal" prefWidth="85.0" text="Total" />
+                  <TableColumn fx:id="colSubtotal" prefWidth="85.0" text="Subtotal" />
+                  <TableColumn fx:id="colPromedio" prefWidth="85.0" text="Promedio" />
+               </columns>
+            </TableColumn>
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
