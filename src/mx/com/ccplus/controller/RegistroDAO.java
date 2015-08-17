@@ -6,6 +6,7 @@
 package mx.com.ccplus.controller;
 
 import java.util.ArrayList;
+import mx.com.ccplus.model.Count;
 import mx.com.ccplus.model.Pregunta;
 import mx.com.ccplus.model.Registro;
 
@@ -78,6 +79,39 @@ public class RegistroDAO {
             if(i > 0 && i < 6)
             registro.setTotal(Integer.toString(Integer.parseInt(registro.getTotal()) + 1));
         
+    }
+    
+    public ArrayList<Registro> transformCountToRegistro(ArrayList<Count> listaCount){
+        ArrayList<Registro> listaRegistros = new ArrayList<Registro>();
+        
+        for(Count c : listaCount){
+            int[] resp = c.getRespuestas();
+            int total = 0;
+            int subtotal = 0;
+            double promedio = 0;
+            for(int i = 0; i < resp.length; i++){
+                total += resp[i];
+                subtotal += resp[i] * (i+1);
+                if(total != 0) promedio = (double)subtotal / (double)total;
+            }
+            
+            listaRegistros.add(new Registro(
+                    c.getPregunta(),
+                    Integer.toString(c.getRespuestas()[0]),
+                    Integer.toString(c.getRespuestas()[1]),
+                    Integer.toString(c.getRespuestas()[2]),
+                    Integer.toString(c.getRespuestas()[3]),
+                    Integer.toString(c.getRespuestas()[4]),
+                    Integer.toString(total),
+                    Integer.toString(subtotal),
+                    String.format("%1$,.2f", promedio),
+                    c.getMateria(),
+                    c.getMaestro())
+            );
+            
+        }
+        
+        return listaRegistros;
     }
     
 }

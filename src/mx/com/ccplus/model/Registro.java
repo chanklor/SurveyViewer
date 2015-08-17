@@ -29,6 +29,8 @@ public class Registro{
         private String mat_S;
         private String letra;
         private String numero;
+        private String materia;
+        private String maestro;
         
         public Registro(){
             this.pregunta = null;
@@ -52,11 +54,14 @@ public class Registro{
             this.total = null;
             this.subtotal = null;
             this.promedio = null;
+            
             this.mat_A = mat_A;
             this.mat_C = mat_C;
             this.mat_S = mat_S;
             this.letra = letra;
             this.numero = numero;
+            
+            
         }
 
         
@@ -71,6 +76,20 @@ public class Registro{
             this.total = new SimpleStringProperty(total);
             this.subtotal = new SimpleStringProperty(subtotal);
             this.promedio = new SimpleStringProperty(promedio);
+        }
+        
+        public Registro(String pregunta, String uno, String dos, String tres, String cuatro, String cinco, String total, String subtotal, String promedio, String materia, String maestro){
+            this.pregunta = new SimpleStringProperty(pregunta);
+            this.uno = new SimpleStringProperty(uno);
+            this.dos = new SimpleStringProperty(dos);
+            this.tres = new SimpleStringProperty(tres);
+            this.cuatro = new SimpleStringProperty(cuatro);
+            this.cinco = new SimpleStringProperty(cinco);
+            this.total = new SimpleStringProperty(total);
+            this.subtotal = new SimpleStringProperty(subtotal);
+            this.promedio = new SimpleStringProperty(promedio);
+            this.materia = materia;
+            this.maestro = maestro;
         }
         
         
@@ -203,6 +222,24 @@ public class Registro{
         this.numero = numero;
     }
 
+    public String getMateria() {
+        return materia;
+    }
+
+    public void setMateria(String materia) {
+        this.materia = materia;
+    }
+
+    public String getMaestro() {
+        return maestro;
+    }
+
+    public void setMaestro(String maestro) {
+        this.maestro = maestro;
+    }
+    
+    
+
     @Override
     public int hashCode() {
         int hash = 7;
@@ -234,6 +271,11 @@ public class Registro{
             return false;
         }
         return true;
+    }
+
+    @Override
+    public String toString() {
+        return "Registro{" + " materia=" + materia + ", maestro=" + maestro + ", pregunta=" + pregunta.get() + ", uno=" + uno.get() + ", dos=" + dos.get() + ", tres=" + tres.get() + ", cuatro=" + cuatro.get() + ", cinco=" + cinco.get() + ", total=" + total.get() + ", subtotal=" + subtotal.get() + ", promedio=" + promedio.get() + '}';
     }
 
     

@@ -7,12 +7,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane id="AnchorPane" prefHeight="638.0" prefWidth="1061.0" styleClass="mainFxmlClass" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8" fx:controller="mx.com.ccplus.view.Main_FXMLController">
+<AnchorPane id="AnchorPane" prefHeight="638.0" prefWidth="1074.0" styleClass="mainFxmlClass" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="mx.com.ccplus.view.Main_FXMLController">
     <stylesheets>
         <URL value="@main_fxml.css" />
     </stylesheets>
    <children>
-      <TableView fx:id="tabla" layoutX="14.0" layoutY="184.0" prefHeight="440.0" prefWidth="1034.0">
+      <TableView fx:id="tabla" layoutX="9.0" layoutY="169.0" prefHeight="440.0" prefWidth="1040.0">
         <columns>
           <TableColumn fx:id="colPregunta" prefWidth="513.0" text="Pregunta" />
           <TableColumn prefWidth="256.0" text="Calificaciones">
@@ -33,5 +33,11 @@
             </TableColumn>
         </columns>
       </TableView>
+      <ChoiceBox fx:id="choiceMateria" layoutX="90.0" layoutY="24.0" prefHeight="31.0" prefWidth="312.0" />
+      <ChoiceBox fx:id="choiceMaestro" layoutX="672.0" layoutY="24.0" prefHeight="31.0" prefWidth="321.0" />
+      <ChoiceBox fx:id="choiceMatMae" layoutX="90.0" layoutY="67.0" prefHeight="31.0" prefWidth="312.0" />
+      <ChoiceBox fx:id="choiceMaeMat" layoutX="672.0" layoutY="67.0" prefHeight="31.0" prefWidth="321.0" />
+      <Label layoutX="229.0" layoutY="4.0" text="Materias" />
+      <Label layoutX="815.0" layoutY="4.0" text="Maestros" />
    </children>
 </AnchorPane>
