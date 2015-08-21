@@ -1,9 +1,14 @@
 package mx.com.ccplus.view;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.text.Collator;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Objects;
@@ -14,19 +19,36 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.transformation.SortedList;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.WritableImage;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
+import javax.imageio.ImageIO;
 import mx.com.ccplus.SurveyViewer;
 import mx.com.ccplus.controller.RegistroDAO;
 import mx.com.ccplus.model.Pregunta;
 import mx.com.ccplus.model.Registro;
+import org.apache.pdfbox.exceptions.COSVisitorException;
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.graphics.xobject.PDJpeg;
+import org.imgscalr.Scalr;
 
 
 public class Main_FXMLController implements Initializable {
@@ -73,12 +95,21 @@ public class Main_FXMLController implements Initializable {
     @FXML
     ChoiceBox<String> choiceMaeMat;
     
+    @FXML
+    Button botonImprimir;
+    
+    @FXML
+    LineChart<String, Number> lineChart;
+    
+    final XYChart.Series series1 = new XYChart.Series();
+    final XYChart.Series series2 = new XYChart.Series();
+    final XYChart.Series series3 = new XYChart.Series();
+    final XYChart.Series series4 = new XYChart.Series();
+    final XYChart.Series series5 = new XYChart.Series();
+    
     private ObservableList<Registro> listaObservable = FXCollections.observableArrayList();
     private FilteredList<Registro> listaFiltrada;
     private SortedList<Registro> listaOrdenada;
-    
-//    private ArrayList<Materia> listaMateria = new ArrayList<Materia>();
-//    private ArrayList<Maestro> listaMaestro = new ArrayList<Maestro>();
     
     private ObservableList<Materia> listaMateria = FXCollections.observableArrayList();
     private ObservableList<String> listaMatMae = FXCollections.observableArrayList();
@@ -91,31 +122,13 @@ public class Main_FXMLController implements Initializable {
         setChoiceBoxes();
         populateData();
         tablePrefs();
+        setChart();
+        populateChart();
     }
     
     private void setColumns(){
         colPregunta.setCellValueFactory(new PropertyValueFactory<Registro, String>("pregunta"));
-        
-        colPregunta.setCellFactory
-        (
-          column ->
-           {
-             return new TableCell<Registro, String>()
-              {
-                @Override
-                protected void updateItem(String item, boolean empty)
-                 {
-                    super.updateItem(item, empty);
-                    setText(item);
-                    
-                    Registro reg = (Registro) getTableRow().getItem();
-                    if(reg!=null){
-                        setTooltip(new Tooltip( reg.getMateria() + " / " + reg.getMaestro() ));
-                    }
-                 }
-              };
-           });
-        
+               
         colUno.setCellValueFactory(new PropertyValueFactory<Registro, String>("uno"));
         colDos.setCellValueFactory(new PropertyValueFactory<Registro, String>("dos"));
         colTres.setCellValueFactory(new PropertyValueFactory<Registro, String>("tres"));
@@ -167,6 +180,8 @@ public class Main_FXMLController implements Initializable {
                     return false;
                 });
                 
+                populateChart();
+                
             }
         });
         
@@ -208,6 +223,8 @@ public class Main_FXMLController implements Initializable {
                     
                     return false;
                 });
+                
+                populateChart();
                 
             }
         });
@@ -251,7 +268,192 @@ public class Main_FXMLController implements Initializable {
         listaOrdenada = new SortedList<>(listaFiltrada);
         listaOrdenada.comparatorProperty().bind(tabla.comparatorProperty());
         tabla.setItems(listaOrdenada);
+    }
+    
+    private void setChart(){
+        series1.setName("1");
+        series2.setName("2");
+        series3.setName("3");
+        series4.setName("4");
+        series5.setName("5");
         
+        
+        
+        lineChart.getData().add(series1);
+        lineChart.getData().add(series2);
+        lineChart.getData().add(series3);
+        lineChart.getData().add(series4);
+        lineChart.getData().add(series5);
+       
+        
+    }
+    
+    private void populateChart(){
+        
+        series1.getData().clear();
+        series2.getData().clear();
+        series3.getData().clear();
+        series4.getData().clear();
+        series5.getData().clear();        
+        
+        for(Registro reg : listaFiltrada){
+            int resp1 = 0;
+            int resp2 = 0;
+            int resp3 = 0;
+            int resp4 = 0;
+            int resp5 = 0;
+            try{
+                resp1 = Integer.parseInt(reg.getUno());
+                resp2 = Integer.parseInt(reg.getDos());
+                resp3 = Integer.parseInt(reg.getTres());
+                resp4 = Integer.parseInt(reg.getCuatro());
+                resp5 = Integer.parseInt(reg.getCinco());
+            }catch(Exception e){
+                System.out.println("error al parse integer resp");
+            }
+            String preg = reg.getPregunta();
+            if(preg.length() > 40) preg = preg.substring(0, 39);
+            series1.getData().add(new XYChart.Data<>(preg, resp1));
+            series2.getData().add(new XYChart.Data<>(preg, resp2));
+            series3.getData().add(new XYChart.Data<>(preg, resp3));
+            series4.getData().add(new XYChart.Data<>(preg, resp4));
+            series5.getData().add(new XYChart.Data<>(preg, resp5));
+        }
+        
+        lineChart.setAnimated(false);
+        
+    }
+    
+    @FXML
+    private void handleButtonImprimir(ActionEvent event) throws COSVisitorException {
+        WritableImage image = botonImprimir.getScene().snapshot(null);
+        File fileImage = new File("chart.jpg");
+        if (fileImage != null) {
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "jpg", fileImage);
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+        
+        Stage stage = (Stage) botonImprimir.getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save PDF");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDf Document", "*.pdf"));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try {
+                
+                // Create a new empty document
+                PDDocument document = new PDDocument();
+
+                // Create a new blank page and add it to the document
+                PDPage page = new PDPage();
+                document.addPage( page );
+
+                
+                
+                InputStream in = new FileInputStream(fileImage);
+                
+                if(fileImage == null) System.out.println("image nula");
+                
+                PDJpeg img = new PDJpeg(document, in);
+                
+                PDPageContentStream contentStream = new PDPageContentStream(document, page);
+                contentStream.drawImage(img, 100, 700);
+                contentStream.close();
+                
+                // Save the newly created document
+                document.save(file.getAbsolutePath());
+
+                // finally make sure that the document is properly
+                // closed.
+                document.close();
+                
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+        
+        if(fileImage.delete()) System.out.println("delted");
+        else System.out.println("error dleting");
+        
+    }
+    
+    @FXML
+    private void handleButtonImprimir2(ActionEvent event) throws COSVisitorException {
+        WritableImage image = botonImprimir.getScene().snapshot(null);
+        File fileImage = new File("chart.png");
+        if (fileImage != null) {
+            try {
+                ImageIO.write(SwingFXUtils.fromFXImage(image, null), "PNG", fileImage);
+            } catch (IOException ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
+        
+    }
+    
+    @FXML
+    private void handleButtonImprimir3(ActionEvent event) throws COSVisitorException {
+//        WritableImage image = botonImprimir.getScene().snapshot(null);
+        WritableImage image = botonImprimir.getScene().snapshot(null);
+        BufferedImage tempImg = null;
+        tempImg = SwingFXUtils.fromFXImage(image, null);
+     
+        BufferedImage img1 = null;
+        byte[] imageInByte;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(tempImg, "png", baos);
+            baos.flush();
+            imageInByte = baos.toByteArray();
+            baos.close();
+            InputStream in = new ByteArrayInputStream(imageInByte);
+            img1 = ImageIO.read(in);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        
+        BufferedImage img2 = Scalr.resize(img1, Scalr.Method.ULTRA_QUALITY, 800);
+        BufferedImage img3 = Scalr.rotate(img2, Scalr.Rotation.CW_90);
+        
+        Stage stage = (Stage) botonImprimir.getScene().getWindow();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Save PDF");
+        fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("PDf Document", "*.pdf"));
+        File file = fileChooser.showSaveDialog(stage);
+        if (file != null) {
+            try {
+                
+                // Create a new empty document
+                PDDocument document = new PDDocument();
+
+                // Create a new blank page and add it to the document
+                PDPage page = new PDPage();
+                document.addPage( page );
+
+                
+                
+                
+                PDJpeg img = new PDJpeg(document, img3, 1.0f);
+                
+                PDPageContentStream contentStream = new PDPageContentStream(document, page);
+                contentStream.drawImage(img, 130, 0);
+                contentStream.close();
+                
+                // Save the newly created document
+                document.save(file.getAbsolutePath());
+
+                // finally make sure that the document is properly
+                // closed.
+                document.close();
+                
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        }
         
     }
     
