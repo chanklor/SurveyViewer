@@ -33,6 +33,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.Tooltip;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -99,6 +101,9 @@ public class Main_FXMLController implements Initializable {
     Button botonImprimir;
     
     @FXML
+    ImageView imageView;
+    
+    @FXML
     LineChart<String, Number> lineChart;
     
     final XYChart.Series series1 = new XYChart.Series();
@@ -150,7 +155,11 @@ public class Main_FXMLController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Materia> observable, Materia oldValue, Materia newValue) {
                 
-                if(newValue != null) choiceMaestro.getSelectionModel().clearSelection();
+                if(newValue != null){
+                    choiceMaestro.getSelectionModel().clearSelection();
+                    choiceMaeMat.getSelectionModel().clearSelection();
+                    assignImage(null);
+                }
                 
                 listaMatMae.clear();
                 listaMatMae.addAll(newValue.getLista());
@@ -164,6 +173,13 @@ public class Main_FXMLController implements Initializable {
 
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                
+                if(newValue!=null){
+                    String mat = extractMatricula(newValue);
+                    if(mat!=null){
+                        assignImage(mat);
+                    }
+                }
                                 
                 listaFiltrada.setPredicate(registro -> {
                     
@@ -195,7 +211,18 @@ public class Main_FXMLController implements Initializable {
             @Override
             public void changed(ObservableValue<? extends Maestro> observable, Maestro oldValue, Maestro newValue) {
                 
-                if(newValue != null) choiceMateria.getSelectionModel().clearSelection();
+                if(newValue.getNombre()!=null){
+                    String mat = extractMatricula(newValue.getNombre());
+                    if(mat!=null){
+                        assignImage(mat);
+                    }
+                }
+                
+                if(newValue != null){
+                    choiceMateria.getSelectionModel().clearSelection();
+                    choiceMatMae.getSelectionModel().clearSelection();
+                }
+                
                 
                 listaMaeMat.clear();
                 listaMaeMat.addAll(newValue.getLista());
@@ -322,6 +349,41 @@ public class Main_FXMLController implements Initializable {
         
         lineChart.setAnimated(false);
         
+    }
+    
+    private String extractMatricula(String catedratico){
+        int i = catedratico.indexOf("(");
+        int j = catedratico.indexOf(")");
+        try{
+            return catedratico.substring(i+1, j);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    private void assignImage(String matricula){
+        if(matricula==null){
+            imageView.setImage(null);
+        }else{
+            String ruta = SurveyViewer.getRuta() + "\\" + matricula + ".";
+            String[] tipoArchivo = {"png", "jpeg", "bmp", "jpg"};
+            int j = 0;
+            for (int i = 1; i <= tipoArchivo.length; i++) {
+                String r = ruta + tipoArchivo[i-1];
+                System.out.println(r);
+                if(new File(r).exists()){
+                    j = i;
+                }
+            }
+            System.out.println(j);
+            if(j!=0){
+                String r = ruta + tipoArchivo[j-1];
+                imageView.setImage(new Image("file:" + r));
+            }else{
+                imageView.setImage(null);
+            }
+        }
     }
     
     @FXML

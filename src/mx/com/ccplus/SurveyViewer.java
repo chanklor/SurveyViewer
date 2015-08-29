@@ -21,12 +21,14 @@ import mx.com.ccplus.model.Unit;
 public class SurveyViewer {
     
     private static ArrayList<Count> listaCount = new ArrayList<Count>();
+    private static String ruta;
     
-    public SurveyViewer(ResultSet rs){
+    public SurveyViewer(ResultSet rs, String ruta){
+        this.ruta = ruta;
         try {
             
             int total = rs.getMetaData().getColumnCount();
-            if(total != 4) throw new IllegalArgumentException("ResultSet Incorrecto");
+            if(total < 4) throw new IllegalArgumentException("ResultSet Incorrecto");
             
             ArrayList<Unit> listaUnit = new ArrayList<Unit>();
             
@@ -64,6 +66,10 @@ public class SurveyViewer {
     
     public static ArrayList<Count> getListaCount(){
         return listaCount;
+    }
+    
+    public static String getRuta(){
+        return ruta;
     }
     
 }

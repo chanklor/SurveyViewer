@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.image.*?>
 <?import javafx.scene.chart.*?>
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -13,6 +14,7 @@
         <URL value="@main_fxml.css" />
     </stylesheets>
    <children>
+      <ImageView fx:id="imageView" fitHeight="341.0" fitWidth="341.0" layoutX="1171.0" layoutY="12.0" opacity="0.5" pickOnBounds="true" preserveRatio="true" />
       <TableView fx:id="tabla" layoutX="27.0" layoutY="116.0" prefHeight="565.0" prefWidth="803.0">
         <columns>
           <TableColumn fx:id="colPregunta" prefWidth="375.0" text="Pregunta" />
@@ -41,7 +43,7 @@
       <Label layoutX="187.0" layoutY="8.0" text="Materias" />
       <Label layoutX="625.0" layoutY="8.0" text="Maestros" />
       <Button fx:id="botonImprimir" layoutX="27.0" layoutY="690.0" mnemonicParsing="false" onAction="#handleButtonImprimir3" text="Imprimir" />
-      <LineChart fx:id="lineChart" layoutX="836.0" layoutY="9.0" maxHeight="912.0" maxWidth="1021.0" minHeight="704.0" minWidth="623.0" prefHeight="715.0" prefWidth="683.0">
+      <LineChart fx:id="lineChart" layoutX="836.0" layoutY="9.0" maxHeight="912.0" maxWidth="1021.0" minHeight="704.0" minWidth="623.0" opacity="0.75" prefHeight="715.0" prefWidth="683.0">
         <xAxis>
           <CategoryAxis side="BOTTOM" />
         </xAxis>
