@@ -478,8 +478,15 @@ public class Main_FXMLController implements Initializable {
             e.printStackTrace();
         }
         
-        BufferedImage img2 = Scalr.resize(img1, Scalr.Method.ULTRA_QUALITY, 800);
-        BufferedImage img3 = Scalr.rotate(img2, Scalr.Rotation.CW_90);
+        //BufferedImage img2 = Scalr.resize(img1, Scalr.Method.ULTRA_QUALITY, 800);
+        BufferedImage img3 = Scalr.rotate(img1, Scalr.Rotation.CW_90);
+        
+        try{
+            File outputfile = new File("saved.png");
+            ImageIO.write(img3, "png", outputfile);
+        }catch(IOException e){
+            System.out.println("ajsdjansdnkas");
+        }
         
         Stage stage = (Stage) botonImprimir.getScene().getWindow();
         FileChooser fileChooser = new FileChooser();
